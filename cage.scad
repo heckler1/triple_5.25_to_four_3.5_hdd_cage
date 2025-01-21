@@ -1,69 +1,72 @@
 
 use <snap-pins.scad>;
 
-PART = "test"; // ["cage", "rail", "fan_shroud", "fan_mounting_pin", "test"]
+PART = "cage"; // ["cage", "rail", "fan_shroud", "fan_mounting_pin", "test"]
 // Select the grill style for the fan shroud.  Use custom and replace the fan_cover_custom.stl with your custom grill (see README.md for more details.)  Select none for an empty hole with an externally mounted grill cover.
 grill_style = "fan_cover_web.stl"; // [fan_cover_crosshair.stl:crosshair,fan_cover_crosshex.stl:crosshex,fan_cover_grid.stl:grid,fan_cover_teardrop.stl:teardrop,fan_cover_web.stl:web,fan_cover_custom.stl:custom,fan_cover_none.stl:none]
 
 include_fan_mount = true;
+include_cd_bay_slots = false; // If the bay in your case has little shelf rails for drives to sit on
 
 fan_grill_cover_height = 2;
 shroud_h = 26;
 shroud_inset = 11;
+hdd_count = 5; // Max of 5
+// Gap to leave between drives for airflow, can be larger with fewer drives
+hdd_spacing = 0.5;
 
-// How much tolerance to add to the prints.  This primarily impacts the rail channels, but also has some other impacts such as the pins on the rail that plug into the hard drive.
+// How much tolerance to add to the prints. 
+// This primarily impacts the rail channels, but also has some other impacts such as 
+// the pins on the rail that plug into the hard drive, as well as the harddrive dimensions themselves
 tolerance = .2;
 
-bay_h = 41.3 + tolerance;
-bay_w = 146.1 + tolerance;
-
-drive_h = 29 + tolerance; // 41 + tolerance;
-drive_w = 146 + tolerance;
-drive_l = 165 + tolerance;
-
 // See https://toshiba.semicon-storage.com/us/storage/support/faq/storage-holes.html
-hdd_a1  =  26.10 + 0;
-hdd_a2  = 147.00 + 0;
-hdd_a3  = 101.60 + 0;
-hdd_a4  =  95.25 + 0;
-hdd_a5  =   3.18 + 0;
-hdd_a6  =  44.45 + 0;
-hdd_a7  =  41.28 + 0;
-hdd_a8  =  28.50 + 0;
-hdd_a9  = 101.60 + 0;
-hdd_a10 =   6.35 + 0;
-hdd_a13 =  76.20 + 0;
+// SFF-8301 3.5" Drive Specs
+// Tolerances +-0.25mm unless otherwise specified
+// Commented values are unused by this program, but useful for understanding the spec
+hdd_a1  =  26.10 + 0; // Max Height - Can also be 17.8mm or 42.0mm
+hdd_a2  = 147.00 + 0; // Max Length
+hdd_a3  = 101.60 + 0; // Max Width
+//hdd_a4  =  95.25 + 0; // Width of underside holes
+hdd_a5  =   3.18 + 0; // Underside hole distance from close edge
+//hdd_a6  =  44.45 + 0; // Distance between underside mounting holes closest to the connector and the middle underside mounting holes
+hdd_a7  =  41.28 + 0; // Distance between the edge of the drive/connector and the closest row of underside mounting holes - +- 0.5mm
+hdd_a8  =  28.50 + 0; // Distance between the edge of the drive and the closest side mounting hole - +- 0.5mm
+hdd_a9  = 101.60 + 0; // Distance between the two side mounting holes
+hdd_a10 =   6.35 + 0; // Distance from the bottom of the drive to the side mounting holes - +- 0.5mm
+//hdd_a13 =  76.20 + 0; // Distance between the set of underside mounting holes closes to the edge of the drive/connector and farthest (3rd) row of underside mounting holes
 
 // See SFF-8551
-cd_a1  =  41.53 + 0;
-cd_a2  =  42.30 + 0;
-cd_a3  = 148.00 + 0;
-cd_a4  = 202.80 + 0;
-cd_a5  = 146.05 + 0;
-cd_a6  = 139.70 + 0;
-cd_a7  =   3.18 + 0;
-cd_a8  =  79.25 + 0;
-cd_a9  =  47.40 + 0;
-cd_a10 =  47.40 + 0;
-cd_a11 =  79.25 + 0;
-cd_a13 =  10.00 + 0;
-cd_a14 =  21.84 + 0;
-cd_a16 =   6.50 + 0;
-cd_a17 =   5.00 + 0;
+// All dimensions have 0.25mm tolerance
+cd_a1  =  41.53 + 0; // Case Height
+cd_a2  =  42.30 + 0; // Bezel Height
+//cd_a3  = 148.00 + 0; // Bezel Width
+cd_a4  = 202.80 + 0; // Case Length
+cd_a5  = 146.05 + 0; // Case Width
+//cd_a6  = 139.70 + 0; // Width of underside mounting holes
+//cd_a7  =   3.18 + 0; // Underside hole distance from close edge
+//cd_a8  =  79.25 + 0; // Distance lengthwise between the two sets of underside mounting holes
+//cd_a9  =  47.40 + 0; // Distance from bezel to closest underside mounting holes
+//cd_a10 =  47.40 + 0; // Distance from bezel to closest side mounting holes
+cd_a11 =  79.25 + 0; // Distance lengthwise between the two sets of side mounting holes
+cd_a13 =  10.00 + 0; // Distance from bottom to lower side mounting holes
+cd_a14 =  21.84 + 0; // Distance from bottom to upper side mounting holes (optional)
+cd_a16 =   6.50 + 0; // Bezel Length (inc eject button)
+//cd_a17 =   5.00 + 0; // Bezel Length (exc eject button)
 
 hdd_h = hdd_a1 + tolerance;
 hdd_w = hdd_a3 + tolerance;
 hdd_l = hdd_a2 + tolerance;
 
-cage_h = 125.75 + 0;
-cage_w = 145 + 0; // 146;
-cage_l = hdd_a2 - hdd_a7 + 20; //cd_a10 + cd_a11 + 10;
+cd_bays = 3; // Set here for documentation; but because the harddrives are vertically mounted, this is the only sensical value
+cd_cage_tolerance = -1;
+
+cage_h = (cd_a2 * cd_bays) + cd_cage_tolerance;
+cage_w = cd_a5 + cd_cage_tolerance; 
+cage_l = hdd_a2 - hdd_a7 + 20; // The distance between the rear of the drive and the frontmost mounting holes, plus some extra
+cage_walls = 5; // Thinnest portion of the side walls, aside from cable routing cutouts
+
 total_rail_height = 8 + 0;
-
-echo("old", cd_a10 + cd_a11 + 10);
-echo("new", hdd_a2 - hdd_a7 + 20);
-
-spacing_w = 4 + 0;
 
 // pin connector settings.
 snap_pin_pointed = 1;
@@ -83,10 +86,10 @@ snap_pin_thickness = 1.0;
 
 $fn=$preview ? 18 : 120;
 
-module vertical_hdd(l = hdd_l) {
-    translate([hdd_h, 0, 0]) {
+module vertical_hdd(hdd_pocket_height) {
+    translate([hdd_pocket_height-hdd_spacing, 0, 0]) {
         rotate([0, -90, 0]) {
-            cube([hdd_w, l, hdd_h]);
+            cube([hdd_w, hdd_l, hdd_pocket_height]);
             translate([-total_rail_height + 0.01, 0, hdd_a10])
                 rotate([0, 90, 0])
                     rail(false);
@@ -98,17 +101,19 @@ module vertical_hdd(l = hdd_l) {
 }
 
 module caged_hdds() {
-    hdds_area = cage_w - spacing_w * 2;
-    hdd_area = hdds_area / 4;
-    for(i = [0 : 1 : 3 ]) {
-        translate([i * hdd_area + spacing_w, -1, (cage_h - hdd_w) / 2])
-            vertical_hdd(hdd_l + 2);
+    hdds_area = cage_w - (cage_walls * 2);
+    hdd_area = hdds_area / hdd_count;
+    
+    assert(hdd_area >= hdd_h+hdd_spacing)
+    for(i = [0 : 1 : hdd_count-1 ]) {
+        translate([i * (hdd_area-(1-hdd_spacing)), -1, (cage_h - hdd_w) / 2])
+            vertical_hdd(hdd_area);
     }
 }
 
 module rail_spacing() {
-    rail = 4;
-    rail_s = 3;
+    rail = 4; // Depth of slot
+    rail_s = 3; // Width of slot
     offset = sqrt(2 * rail * rail)/2 - rail_s / 2;
 
     translate([0, 1, -rail_s/2])
@@ -153,7 +158,7 @@ module fan_mounting_sockets() {
 }
 
 module cage() {
-    cut = 7;
+    cut = 7; // Corner chamfer
     difference() {
         // main area
         cube([cage_w, cage_l, cage_h]);
@@ -174,27 +179,27 @@ module cage() {
         if (include_fan_mount) {
             fan_mounting_sockets();
         }
-        // cut out space for bay rails
-        translate([cage_w, 0, cage_h*1/3 + 1.5])
-            rail_spacing();
-        translate([cage_w, 0, cage_h*2/3 + 1.5])
-            rail_spacing();
-        translate([0, 0, cage_h*1/3 + 1.5])
-            rail_spacing();
-        translate([0, 0, cage_h*2/3 + 1.5])
-            rail_spacing();
-        // cut out center stuff
-        translate([cage_w/2, cage_l/2, cage_h/2])
-            cube([hdd_h * 4 + spacing_w*7, cage_l * 2, hdd_w], center=true);
-        // cut out the hdd vertical spacing
-        translate([spacing_w, 0, 0])
+        // cut out space for cd bay rails
+        if (include_cd_bay_slots){
+            translate([cage_w, 0, cage_h*1/3 + 1.5])
+                rail_spacing();
+            translate([cage_w, 0, cage_h*2/3 + 1.5])
+                rail_spacing();
+            translate([0, 0, cage_h*1/3 + 1.5])
+                rail_spacing();
+            translate([0, 0, cage_h*2/3 + 1.5])
+                rail_spacing();
+        }
+        
+        translate([cage_walls, 0, 0])
             caged_hdds();
+        
         // cut out 5.25" drive mounting holes.
         mounting_d = 3.0;
-        for(drive = [0 : 1 : 2]) {
+        for(drive = [0 : 1 : (cd_bays - 1)]) {
             drive_offset = drive * (cd_a2 + .5);
             for(set = [0 : 1 : 1]) {
-                set_offset = cage_l - shroud_inset - (cd_a11 * set); // cd_a10 + cd_a11 * set;
+                set_offset = cage_l - shroud_inset - (cd_a11 * set);
                 for(mount = [0 : 1 : 1]) {
                     mount_offset = mount ? cd_a13 : cd_a14;
                     translate([-10, set_offset, drive_offset + mount_offset]) {
@@ -213,8 +218,8 @@ module cage() {
         // cut out routing for fan power cable.
         center_w = cage_w/2;
         center_h = cage_h/2;
-        corner_w = (cage_w - spacing_w*4)/2 - 1;
-        corner_h = hdd_w/2 - 1;
+        corner_w = (cage_w)/2 - cage_walls*1.5;
+        corner_h = hdd_w/2;
 //        for(w = [-1 : 2 : 1]) {
 // No space on the other side for cable routing.
         for(w = [-1 : 2 : -1]) {
@@ -223,7 +228,7 @@ module cage() {
                 z = center_h + corner_h * h;
                 translate([x, cage_l/2, z])
                     rotate([90, 0, 0])
-                        cylinder(cage_l + 2, r=3, center=true);
+                        cylinder(cage_l + 2, r=2.5, center=true);
             }
         }
     }
@@ -258,8 +263,6 @@ module clip(height, length, width) {
 }
 
 module handle(length, width, height, rail_height, positive=true) {
-    t = tolerance;
-
     s1_l = length / 2;
     s2_angle = 40;
     // math to make the length of section 2 be half the
